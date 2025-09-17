@@ -45,6 +45,34 @@ def send_command(data, node=DEFAULT_NODE):
     else:
         print("Node not specified for command.")
 
+def node_server():
+    node = DEFAULT_NODE
+    if node in NODES:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_socket.bind((NODE_HOST, NODES[node]))
+            server_socket.listen(5)
+            print(f"Node Manager listening for node '{node}' on {NODE_HOST}:{NODES[node]}")
+            while True:
+                conn, addr = server_socket.accept()
+                with conn:
+                    print(f"Connection from {addr}")
+                    data = conn.recv(1024)
+                    if not data:
+                        continue
+                    command = data.decode().strip().split()
+                    print(f"Received command: {command}")
+                    response = handle_command(command)
+                    conn.sendall(response.encode() if response else b'ACK')
+    else:
+        print(f"Node '{node}' not found in NODES.")
+
+def handle_command(command):
+    # You can expand this to actually process commands and return responses
+    # For now, just print and return a generic ACK
+    print(f"Handling command: {command}")
+    return 'ACK'
+
 def web_listener():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((WEB_IP, WEB_PORT))
@@ -62,6 +90,7 @@ def web_listener():
                 conn.sendall(b'ack')
 
 if __name__ == "__main__":
+    threading.Thread(target=node_server, daemon=True).start()
     # threading.Thread(target=web_listener, daemon=True).start()
     user_input = input("bro it works lets fucking go\n")
     send_command(user_input)
