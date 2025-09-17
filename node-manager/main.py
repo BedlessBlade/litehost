@@ -18,7 +18,6 @@ def construct_command(data):
         return None
 
 def send_command(data, node=DEFAULT_NODE):
-    # Accept both string and list input for data
     if isinstance(data, str):
         data = data.strip().split()
     command = construct_command(data)
@@ -26,15 +25,23 @@ def send_command(data, node=DEFAULT_NODE):
         print("No command to send.")
         return
     if node is not None:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(SERVER_TIMEOUT)
-            s.connect((NODE_HOST, NODES["CT0"]))
-            s.sendall(command.encode())
-            try:
-                response = s.recv(1024)
-                print(response.decode())
-            except socket.timeout:
-                print("No response received (timeout).")
+        if node in NODES:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+                server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                server_socket.bind((NODE_HOST, NODES[node]))
+                server_socket.listen(1)
+                print(f"Server listening for node '{node}' on {NODE_HOST}:{NODES[node]}")
+                conn, addr = server_socket.accept()
+                with conn:
+                    print(f"Connection from {addr}")
+                    conn.sendall(command.encode())
+                    try:
+                        response = conn.recv(1024)
+                        print(response.decode())
+                    except socket.timeout:
+                        print("No response received (timeout).")
+        else:
+            print(f"Node '{node}' not found in NODES.")
     else:
         print("Node not specified for command.")
 

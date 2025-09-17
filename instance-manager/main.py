@@ -4,7 +4,7 @@ from constants import *
 from tmux import *
 from util import *
 import threading
-
+import time
 
 def safe_int(val):
     try:
@@ -19,16 +19,17 @@ def start_tunnel():
 
 threading.Thread(target=start_tunnel, daemon=True).start()
 
-server = socket.socket()
+time.sleep(2)
+
+client = socket.socket()
 try:
-    server.bind(('127.0.0.1', port))
+    client.connect(('127.0.0.1', port))
 except Exception as e:
-    print("Socket Bind Error: " + str(e))
-server.listen()
+    print("Socket Connect Error: " + str(e))
 
 conn = None
 try:
-    conn, addr = server.accept()
+    conn = client
     online_instances = set()
     while True:
         try:
@@ -106,4 +107,4 @@ try:
 finally:
     if conn:
         conn.close()
-    server.close()
+    client.close()
