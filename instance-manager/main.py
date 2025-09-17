@@ -21,7 +21,7 @@ threading.Thread(target=start_tunnel, daemon=True).start()
 
 server = socket.socket()
 try:
-    server.bind((ssh_hostname, server_port))
+    server.bind((ssh_hostname, port))
 except Exception as e:
     print("Socket Bind Error: " + str(e))
 server.listen()
