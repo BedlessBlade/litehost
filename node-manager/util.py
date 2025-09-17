@@ -11,13 +11,13 @@ def send_command(command):
         print("Server response:", response.decode())
 
 def retrieve_json():
-    if not os.path.exists(json_name):
-        with open(json_name, 'w') as f:
+    if not os.path.exists(JSON_NAME):
+        with open(JSON_NAME, 'w') as f:
             json.dump({}, f)
         return {}
     try:
-        with open(json_name, 'r') as f:
+        with open(JSON_NAME, 'r') as f:
             return json.load(f)
     except Exception as e:
-        print(f"Error reading {json_name}: {e}")
+        print(f"Error reading {JSON_NAME}: {e}")
         return {}

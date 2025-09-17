@@ -54,33 +54,35 @@ def startup():
     return input("> ").strip()
 
 if __name__ == "__main__":
-    choice = startup()
+    while True:
+        choice = startup()
 
-    if choice == '1':
-        cmd = prompt_user("Enter command name:")
-        action = prompt_user("Enter command action:")
-        add_command(cmd, action)
-    elif choice == '2':
-        data = retrieve_json()
-        if not data:
-            print("No commands to remove.")
+        if choice == '1':
+            cmd = prompt_user("Enter command name:")
+            action = prompt_user("Enter command action:")
+            add_command(cmd, action)
+        elif choice == '2':
+            data = retrieve_json()
+            if not data:
+                print("No commands to remove.")
+            else:
+                print("Current commands:")
+                cmd_list = list(data.keys())
+                for idx, (cmd, action) in enumerate(data.items(), 1):
+                    print(f"{idx}. {cmd}: {action}")
+                user_input = prompt_user("Enter command name or number to remove:")
+                to_remove = user_input
+                if user_input.isdigit():
+                    num = int(user_input)
+                    if 1 <= num <= len(cmd_list):
+                        to_remove = cmd_list[num - 1]
+                    else:
+                        print("Invalid number.")
+                        to_remove = None
+                if to_remove:
+                    remove_command(to_remove)
+        elif choice == '3':
+            print("Exiting.")
+            break
         else:
-            print("Current commands:")
-            cmd_list = list(data.keys())
-            for idx, (cmd, action) in enumerate(data.items(), 1):
-                print(f"{idx}. {cmd}: {action}")
-            user_input = prompt_user("Enter command name or number to remove:")
-            to_remove = user_input
-            if user_input.isdigit():
-                num = int(user_input)
-                if 1 <= num <= len(cmd_list):
-                    to_remove = cmd_list[num - 1]
-                else:
-                    print("Invalid number.")
-                    to_remove = None
-            if to_remove:
-                remove_command(to_remove)
-    elif choice == '3':
-        print("Exiting.")
-    else:
-        print("Invalid choice.")
+            print("Invalid choice.")
