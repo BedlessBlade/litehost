@@ -1,1 +1,48 @@
 #!/bin/bash
+if [ -f /etc/debian_version ]; then
+    echo "Debian/Ubuntu detected."
+    sudo apt update
+    sudo apt install -y python3 python3-pip git rustup
+    rustup install nightly
+elif [ -f /etc/arch-release ]; then
+    echo "Arch Linux detected."
+    sudo pacman -Sy --noconfirm python python-pip git rustup
+    rustup install nightly
+elif [ -f /etc/redhat-release ]; then
+    echo "Rocky/RHEL/CentOS detected."
+    sudo dnf install -y epel-release
+    sudo dnf install -y python3 python3-pip git curl
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup install nightly
+elif [ "$(uname)" = "FreeBSD" ]; then
+    echo "FreeBSD detected."
+    sudo pkg update
+    sudo pkg install -y python3 py39-pip git curl
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup install nightly
+elif [ "$(uname)" = "OpenBSD" ]; then
+    echo "OpenBSD detected."
+    doas pkg_add python%3.9 py3-pip git curl
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup install nightly
+elif [ "$(uname)" = "NetBSD" ]; then
+    echo "NetBSD detected."
+    sudo pkgin update
+    sudo pkgin install python39 py39-pip git curl
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup install nightly
+elif [ -f /etc/void-release ]; then
+    echo "Void Linux detected."
+    sudo xbps-install -Sy python3 python3-pip git curl
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    rustup install nightly
+else
+    echo "This script currently supports only Debian/Ubuntu, Arch Linux, Rocky/RHEL/CentOS, FreeBSD, OpenBSD, NetBSD, and Void Linux."
+    echo "If you are running another Unix-like OS, please install python3, pip, git, curl, and rustup manually along with cargo nightly."
+    exit 1
+fi
