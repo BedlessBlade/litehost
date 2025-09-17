@@ -51,4 +51,4 @@ def web_listener():
 
 if __name__ == "__main__":
     #threading.Thread(target=web_listener, daemon=True).start()
-    send_command(input("bro it works lets fucking go"))
+    send_command(input("bro it works lets fucking go").split())
