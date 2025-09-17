@@ -26,52 +26,44 @@ def send_command(data, node=DEFAULT_NODE):
         return
     if node is not None:
         if node in NODES:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-                server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                server_socket.bind((NODE_HOST, NODES[node]))
-                server_socket.listen(1)
-                print(f"Server listening for node '{node}' on {NODE_HOST}:{NODES[node]}")
-                conn, addr = server_socket.accept()
-                with conn:
-                    print(f"Connection from {addr}")
-                    conn.sendall(command.encode())
-                    try:
-                        response = conn.recv(1024)
-                        print(response.decode())
-                    except socket.timeout:
-                        print("No response received (timeout).")
+            # NOTE: send_command does NOT open a connection anymore
+            print(f"send_command is now expected to use an open connection for node '{node}'.")
+            # You can implement persistent connection usage here later.
         else:
             print(f"Node '{node}' not found in NODES.")
     else:
         print("Node not specified for command.")
-
-def node_server():
-    node = DEFAULT_NODE
-    if node in NODES:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind((NODE_HOST, NODES[node]))
-            server_socket.listen(5)
-            print(f"Node Manager listening for node '{node}' on {NODE_HOST}:{NODES[node]}")
-            while True:
-                conn, addr = server_socket.accept()
-                with conn:
-                    print(f"Connection from {addr}")
-                    data = conn.recv(1024)
-                    if not data:
-                        continue
-                    command = data.decode().strip().split()
-                    print(f"Received command: {command}")
-                    response = handle_command(command)
-                    conn.sendall(response.encode() if response else b'ACK')
-    else:
-        print(f"Node '{node}' not found in NODES.")
 
 def handle_command(command):
     # You can expand this to actually process commands and return responses
     # For now, just print and return a generic ACK
     print(f"Handling command: {command}")
     return 'ACK'
+
+def node_server():
+    node = "CT0"
+    if node in NODES:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_socket.bind((NODE_HOST, NODES[node]))
+            server_socket.listen(1)  # Listen for 1 connection at a time
+            print(f"Node Manager listening for node '{node}' on {NODE_HOST}:{NODES[node]}")
+            while True:
+                print("Waiting for a connection...")
+                conn, addr = server_socket.accept()
+                print(f"Connected by {addr}")
+                with conn:
+                    while True:
+                        data = conn.recv(1024)
+                        if not data:
+                            print(f"Connection closed by {addr}")
+                            break
+                        command = data.decode().strip().split()
+                        print(f"Received command: {command}")
+                        response = handle_command(command)
+                        conn.sendall(response.encode() if response else b'ACK')
+    else:
+        print(f"Node '{node}' not found in NODES.")
 
 def web_listener():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
