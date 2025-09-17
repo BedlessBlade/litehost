@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 import json
 import os
-from constants import json_name
+from constants import JSON_NAME
 
 def save_json(data):
     try:
-        with open(json_name, 'w') as f:
+        with open(JSON_NAME, 'w') as f:
             json.dump(data, f, indent=4)
     except Exception as e:
-        print(f"Error saving {json_name}: {e}")
+        print(f"Error saving {JSON_NAME}: {e}")
         return
-    print(f"Commands saved to {json_name}")
+    print(f"Commands saved to {JSON_NAME}")
 
 def retrieve_json():
     try:
-        with open(json_name, 'r') as f:
+        with open(JSON_NAME, 'r') as f:
             return json.load(f)
     except Exception as e:
-        print(f"Error reading {json_name}: {e}")
+        print(f"Error reading {JSON_NAME}: {e}")
         return {}
 
 def remove_command(command):
