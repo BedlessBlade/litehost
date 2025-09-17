@@ -38,6 +38,9 @@ while True:
         elif data.decode()[0] == 'stopall':
             stop_all(args[1])
     conn.send(b'ack')
+
+conn.close()
+server.close()
         
             
 
