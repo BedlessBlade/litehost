@@ -91,11 +91,11 @@ try:
                     stop_all(args[1])
                 except Exception as e:
                     print(f"Error stopping all: {e}")
-            conn.send(b'ack')
+            conn.send(b'ACK')
         except Exception as e:
             print(f"Error in main loop: {e}")
             try:
-                conn.send(b'nack')
+                conn.send(b'NACK')
             except Exception:
                 pass
             continue

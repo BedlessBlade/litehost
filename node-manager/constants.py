@@ -1,3 +1,11 @@
 SERVER_HOST = '127.0.0.1'
 SERVER_PORT = 8080
 JSON_NAME = 'commands.json'
+WEB_IP = 'bedless.xyz'
+WEB_PORT = 7000
+NODES = {
+    "CT0": 5555
+}
+SERVER_TIMEOUT = 1
+NODE_HOST = '127.0.0.1'
+DEFAULT_NODE = "CT0"
