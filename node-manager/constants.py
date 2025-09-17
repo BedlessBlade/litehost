@@ -4,7 +4,7 @@ JSON_NAME = 'commands.json'
 WEB_IP = 'bedless.xyz'
 WEB_PORT = 7000
 NODES = {
-    "CT0": 5555
+    "CT0": 5000
 }
 SERVER_TIMEOUT = 1
 NODE_HOST = '127.0.0.1'

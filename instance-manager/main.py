@@ -3,17 +3,21 @@ import socket, os
 from constants import *
 from tmux import *
 from util import *
+import threading
+
 
 def safe_int(val):
     try:
         return int(val)
     except Exception:
         return None
+def start_tunnel():
+    try:
+        os.system(f'ssh -N -L {port}:127.0.0.1:{port} {ssh_user}@{ssh_hostname}')
+    except Exception as e:
+        print("SSH Tunnel Error: " + str(e))
 
-try:
-    os.system(f'ssh -L {server_port}:127.0.0.1:{ssh_port} {ssh_user}@{ssh_hostname}')
-except Exception as e:
-    print("SSH Tunnel Error: " + str(e))
+threading.Thread(target=start_tunnel, daemon=True).start()
 
 server = socket.socket()
 try:
@@ -103,6 +107,3 @@ finally:
     if conn:
         conn.close()
     server.close()
-
-
-
